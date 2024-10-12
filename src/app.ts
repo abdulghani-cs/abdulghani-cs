@@ -1,35 +1,19 @@
-import express, { Application } from 'express'
-import path from 'path'
-import router from './APIs'
-import errorHandler from './middlewares/errorHandler'
-import notFound from './handlers/notFound'
-import helmet from 'helmet'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
+import express from 'express';
+import reportRoutes from './routes/report.routes';
+import teamRoutes from './routes/team.routes';
+import attendanceRoutes from './routes/attendance.routes';
 
-const app: Application = express()
+const app = express();
 
-//Middlewares
-app.use(helmet())
-app.use(cookieParser())
-app.use(
-    cors({
-        methods: ['GET', 'POST', 'DELETE', 'OPTIONS', 'HEAD', 'PUT', 'PATCH'],
-        origin: ['https://xyz.com'],
-        credentials: true
-    })
-)
-app.use(express.json())
-app.use(express.static(path.join(__dirname, '../', 'public')))
+app.use(express.json());
+app.use('/api/reports', reportRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
-//Router
-// app.use('/v1', router)
-router(app)
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
-//404 handler
-app.use(notFound)
 
-//Handlers as Middlewares
-app.use(errorHandler)
-
-export default app
